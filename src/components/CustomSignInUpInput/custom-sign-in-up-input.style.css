@@ -1,0 +1,58 @@
+.custom-sign-in-up-input-component {
+    width: 400px;
+    height: 60px;
+
+    display: flex;
+
+    border: #C1BBBB 1px solid;
+}
+
+.custom-sign-in-up-input-rectangle-transparent {
+    width: 3px;
+    height: 60px;
+
+}
+.custom-sign-in-up-input-rectangle {
+    width: 3px;
+    height: 60px;
+    background: #F85A40;
+}
+
+.custom-sign-in-up-input-container {
+    padding-top: 4px;
+    text-align: start;
+}
+.custom-sign-in-up-input-label {
+    margin-left: 10px;
+
+    font-family: 'Open Sans', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 16px;
+    text-transform: none;
+    color: #757272;
+}
+.custom-sign-in-up-input-input {
+    margin-left: 10px;
+
+    width: 365px;
+    height: 35px;
+
+    font-family: 'Open Sans', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 16px;
+    text-transform: none;
+    color: #2AB19F;
+
+    border: none;
+    border-radius: 5px;
+    background: none;
+}
+.custom-sign-in-up-input-input:focus {
+    outline: none;
+}
+
+
