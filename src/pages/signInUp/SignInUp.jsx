@@ -1,13 +1,21 @@
 import "./sign-in-up.style.css"
 import React, {useState, useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 import {ReactComponent as Logo} from "../../icons/logo.svg";
 import CustomSignInUpInput from "../../components/CustomSignInUpInput/CustomSignInUpInput";
 import CustomPasswordInput from "../../components/CustomPasswordInput/CustomPasswordInput";
 import {ReactComponent as Arrow} from "../../icons/Arrow.svg";
 import Language from "../../icons/language.png";
+import axios from "axios";
 
 
 const SignInUp = () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [userSignIn, setUserSignIn] = useState({
+        email: "",
+        password: ""
+    });
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [user, setUser] = useState({
         firstName: "",
         lastName: "",
@@ -16,14 +24,104 @@ const SignInUp = () => {
         confirmPassword: ""
     });
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [errors, setErrors] = useState("");
+
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const navigate = useNavigate();
+
     const handleChange = ({target: {name, value}}) => {
         setUser({...user, [name]: value});
+        setUserSignIn({...userSignIn, [name]: value});
+        setErrors({...errors, [name]: ''});
     }
 
-    const handleClick = event => {
+
+    async function loginUser(user) {
+        console.log("loginUser");
+        const sendUser = {
+            email: user.email,
+            password: user.password
+        };
+        try {
+            const response = await axios.post("http://localhost:8765/worker/api/v1/registration/authenticate", sendUser)
+            localStorage.setItem('user', JSON.stringify(response.data))
+            navigate("/main");
+        } catch(error) {
+            console.log(error.message)
+            console.log("error")
+        }
+    }
+    const handleClick1 = event => {
         event.preventDefault()
+        if (isValid()) {
+            loginUser(user)
+
+        } else {
+            console.log(errors);
+        }
     }
 
+    function registerUser(user) {
+        console.log("registerUser");
+        const sendUser = {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            password: user.password
+        };
+        axios.post("http://localhost:8765/worker/api/v1/registration", sendUser)
+            .then((response) => {
+                login()
+            })
+            .catch((error) => {
+                if (error) {
+                    console.log(error.response);
+                    console.log("error.response.status: ", error.response.status);
+                }
+            });
+    }
+
+    const handleClick2 = event => {
+        event.preventDefault()
+        if (isValid()) {
+            registerUser(user)
+
+        } else {
+            console.log(errors);
+        }
+    }
+
+    function login() {
+        navigate("/login");
+    }
+
+
+    const validateInput = data => {
+        let errors = {}
+        if (!/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            .test(data.email)) {
+            errors.email = "Please enter valid email"
+        }
+        if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(data.password)) {
+            errors.password = "Password must contain at least 8 characters (letters and numbers)"
+        }
+        return {
+            errors,
+            isValid: JSON.stringify(errors) === '{}'
+        }
+    }
+    const isValid = () => {
+        const {errors, isValid} = validateInput(user)
+        if (!isValid) {
+            setErrors(errors)
+        }
+        return isValid
+    }
+
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         const signUpButton = document.getElementById("signUp");
         const signInButton = document.getElementById("signIn");
@@ -110,7 +208,7 @@ const SignInUp = () => {
                         After signing up you will receive confirmation letter on your email.
                     </div>
 
-                    <button className={"sign-up-button-sign-up"} onClick={handleClick}>
+                    <button className={"sign-up-button-sign-up"} onClick={handleClick2}>
                         Sign Up
                     </button>
                 </form>
@@ -146,7 +244,7 @@ const SignInUp = () => {
                         label={"Email Address"}
                         name={"email"}
                         placeholder={"Enter email"}
-                        value={user.email}
+                        value={userSignIn.email}
                         handleChange={handleChange}
                     />
                     <div className={"padding-div"}/>
@@ -156,13 +254,13 @@ const SignInUp = () => {
                         label={"Password"}
                         name={"password"}
                         placeholder={"Enter password"}
-                        value={user.password}
+                        value={userSignIn.password}
                         handleChange={handleChange}
                     />
                     <div className={"sign-in-padding"}/>
                     <div className={"padding-div"}/>
 
-                    <button className={"sign-up-button-sign-up"} onClick={handleClick}>
+                    <button className={"sign-up-button-sign-up"} onClick={handleClick1}>
                         Sign In
                     </button>
                 </form>
